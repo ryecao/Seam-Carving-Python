@@ -1,3 +1,6 @@
+# Author: ryecao
+# ryecao@gmail.com
+
 import cv2
 import numpy as np
 import operator
