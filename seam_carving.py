@@ -9,9 +9,10 @@ from matplotlib import pyplot as plt
 import profile
 import copy
 
+
 def find_a_seam(m_energy):
     row_num, col_num = m_energy.shape
-    print row_num,"px X",col_num,"px"
+    print row_num, "px X", col_num, "px"
     m_energy = np.absolute(m_energy).astype(int)
 
     cost = np.zeros((row_num, col_num)).astype(int)
@@ -84,9 +85,17 @@ def resize(img, amount, orient, mode):
         seam = find_a_seam(sobel)
         if mode:
             for row in xrange(0, row_num):
-                interpolation_pixel = [(m_res[row][seams[i][row] - 1][0] + m_res[row][seams[i][row] + 1][0]) / 2, (m_res[row][seams[i][row] - 1][
-                    1] + m_res[row][seams[i][row] + 1][1]) / 2, (m_res[row][seams[i][row] - 1][2] + m_res[row][seams[i][row] + 1][2]) / 2]
-                m_res[row].insert(seams[i][row], interpolation_pixel)
+                if row > 0 and row < row_num - 1:
+                    interpolation_pixel = [(m_res[row][seam[row] - 1][0] + m_res[row][seam[row] + 1][0]) / 2, (m_res[row][seam[row] - 1][
+                        1] + m_res[row][seam[row] + 1][1]) / 2, (m_res[row][seam[row] - 1][2] + m_res[row][seam[row] + 1][2]) / 2]
+                elif row == 0:
+                    interpolation_pixel = [m_res[row][
+                        seam[row] + 1][0], m_res[row][seam[row] + 1][1], m_res[row][seam[row] + 1][2]]
+                else:
+                    interpolation_pixel = [m_res[row][
+                        seam[row] - 1][0], m_res[row][seam[row] - 1][1], m_res[row][seam[row] - 1][2]]
+
+                m_res[row].insert(seam[row], interpolation_pixel)
         else:
             for row in xrange(0, row_num):
                 m_res[row].pop(seam[row])
@@ -97,5 +106,5 @@ def resize(img, amount, orient, mode):
     return m_res
 
 img = cv2.imread('sample.jpg')  # input image
-img2 = resize(img, 30, 0, 0) # 30 pixels
+img2 = resize(img, 30, 0, 0)  # 30 pixels
 cv2.imwrite('output.jpg', img2)  # output image
